@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Gin TODO API - Interactive Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Visualization & Content Choices:
+        - Report Info: README.md content (Features, Prerequisites, Build Steps, API Endpoints, Curl Commands, Project Structure, Testing).
+        - Goal: Present technical documentation in an interactive and easily digestible format.
+        - Viz/Presentation Method:
+            - Text sections: Styled HTML text blocks.
+            - Code blocks (build commands, curl, JSON): HTML <pre><code> elements with Tailwind styling and a "Copy to Clipboard" button (JS).
+            - API Endpoints: Structured HTML with clear headings for Method, URL, Request Body, Response. Details for each endpoint will be in expandable sections (JS toggle).
+        - Interaction:
+            - Sidebar navigation (JS to show/hide content sections or scroll).
+            - Expand/collapse for API endpoint details.
+            - Copy-to-clipboard for code snippets.
+        - Justification: This approach makes dense technical information scannable and actionable. Interactive elements like copy buttons and expandable sections improve user experience over a static Markdown file.
+        - Library/Method: Vanilla JS for all interactions. Tailwind CSS for styling. No Chart.js/Plotly.js needed.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .code-block {
+            background-color: #1f2937; /* Tailwind gray-800 */
+            color: #d1d5db; /* Tailwind gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: #4b5563; /* Tailwind gray-600 */
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            border: none;
+        }
+        .copy-button:hover {
+            background-color: #374151; /* Tailwind gray-700 */
+        }
+        .api-endpoint-toggle { cursor: pointer; }
+        .api-endpoint-details { display: none; }
+        .api-endpoint-details.open { display: block; }
+        .method-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+        .method-get { background-color: #22c55e; color: white; } /* Green-500 */
+        .method-post { background-color: #3b82f6; color: white; } /* Blue-500 */
+        .method-put { background-color: #eab308; color: white; } /* Yellow-500 */
+        .method-delete { background-color: #ef4444; color: white; } /* Red-500 */
+
+        /* Sidebar styling */
+        #sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+        @media (max-width: 768px) {
+            #sidebar {
+                transform: translateX(-100%);
+                z-index: 40; /* Ensure sidebar is above content when open */
+            }
+            #sidebar.open {
+                transform: translateX(0);
+            }
+            #content-area {
+                margin-left: 0;
+            }
+        }
+         /* Scrollbar styling for webkit browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9; /* gray-100 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8; /* gray-400 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b; /* gray-500 */
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <header class="md:hidden bg-slate-700 text-white p-4 flex justify-between items-center sticky top-0 z-50">
+            <h1 class="text-xl font-bold">API Documentation</h1>
+            <button id="mobile-menu-button" class="text-white focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </header>
+
+        <aside id="sidebar" class="bg-slate-700 text-slate-100 w-64 min-h-screen p-6 space-y-4 fixed md:sticky top-0 h-screen overflow-y-auto">
+            <h1 class="text-2xl font-bold mb-6">Go Gin TODO API</h1>
+            <nav>
+                <ul class="space-y-2">
+                    <li><a href="#overview" class="nav-link block py-2 px-3 hover:bg-slate-600 rounded-md transition-colors duration-150">Overview</a></li>
+                    <li><a href="#getting-started" class="nav-link block py-2 px-3 hover:bg-slate-600 rounded-md transition-colors duration-150">Getting Started</a></li>
+                    <li><a href="#api-endpoints" class="nav-link block py-2 px-3 hover:bg-slate-600 rounded-md transition-colors duration-150">API Endpoints</a></li>
+                    <li><a href="#testing" class="nav-link block py-2 px-3 hover:bg-slate-600 rounded-md transition-colors duration-150">Testing</a></li>
+                    <li><a href="#project-structure" class="nav-link block py-2 px-3 hover:bg-slate-600 rounded-md transition-colors duration-150">Project Structure</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main id="content-area" class="flex-1 p-6 md:p-10 overflow-y-auto">
+            <div class="max-w-4xl mx-auto">
+                <section id="overview" class="content-section space-y-6">
+                    <h2 class="text-3xl font-semibold border-b pb-2 border-slate-300">Overview</h2>
+                    <p class="text-lg">This is a simple RESTful TODO API built with Go and the Gin web framework. It includes in-memory storage, CORS support, and Prometheus metrics exposure.</p>
+
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-2xl font-semibold mb-3 text-slate-700">Features</h3>
+                        <ul class="list-disc list-inside space-y-2 text-slate-600">
+                            <li><strong>CRUD Operations:</strong> Create, Read, Update, and Delete TODO items.</li>
+                            <li><strong>Gin Framework:</strong> Fast and lightweight web framework for Go.</li>
+                            <li><strong>In-Memory Storage:</strong> Simple data storage (can be easily replaced with a database).</li>
+                            <li><strong>CORS Support:</strong> Configured to allow requests from <code>http://localhost:3000</code> (for a React frontend).</li>
+                            <li><strong>Prometheus Metrics:</strong> Exposes application metrics at <code>/metrics</code> endpoint.</li>
+                            <li><strong>Unit Tests:</strong> Basic unit tests for handler functions.</li>
+                            <li><strong>Dockerfile:</strong> For easy containerization.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-2xl font-semibold mb-3 text-slate-700">Prerequisites</h3>
+                        <p class="mb-2 text-slate-600">Before you begin, ensure you have the following installed:</p>
+                        <ul class="list-disc list-inside space-y-2 text-slate-600">
+                            <li><strong>Go:</strong> Version 1.18 or higher.</li>
+                            <li><strong>Git:</strong> For cloning the repository.</li>
+                            <li><strong>Docker</strong> (Optional, for containerized deployment).</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="getting-started" class="content-section space-y-6">
+                    <h2 class="text-3xl font-semibold border-b pb-2 border-slate-300">Getting Started</h2>
+                    <p class="text-lg">Follow these steps to get the API up and running.</p>
+
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-2xl font-semibold mb-3 text-slate-700">Build and Run Locally</h3>
+                        <ol class="list-decimal list-inside space-y-3 text-slate-600">
+                            <li>
+                                <p><strong>Clone the repository:</strong></p>
+                                <div class="code-block"><code>git clone &lt;repository-url&gt; # Replace with your actual repository URL
+cd todo-app</code></div>
+                            </li>
+                            <li>
+                                <p><strong>Initialize Go Modules and Download Dependencies:</strong></p>
+                                <div class="code-block"><code>go mod tidy</code></div>
+                            </li>
+                            <li>
+                                <p><strong>Run the application:</strong></p>
+                                <div class="code-block"><code>go run main.go</code></div>
+                                <p class="mt-1">The API will start on <code>http://localhost:8080</code>.</p>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-2xl font-semibold mb-3 text-slate-700">Build and Run with Docker</h3>
+                        <ol class="list-decimal list-inside space-y-3 text-slate-600">
+                            <li>
+                                <p><strong>Build the Docker image:</strong></p>
+                                <div class="code-block"><code>docker build -t go-gin-todo-api .</code></div>
+                            </li>
+                            <li>
+                                <p><strong>Run the Docker container:</strong></p>
+                                <div class="code-block"><code>docker run -p 8080:8080 go-gin-todo-api</code></div>
+                                <p class="mt-1">The API will be accessible at <code>http://localhost:8080</code>.</p>
+                            </li>
+                        </ol>
+                    </div>
+                </section>
+
+                <section id="api-endpoints" class="content-section space-y-6">
+                    <h2 class="text-3xl font-semibold border-b pb-2 border-slate-300">API Endpoints</h2>
+                    <p class="text-lg">The API base URL is <code>http://localhost:8080/api/v1</code>.</p>
+
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <div class="api-endpoint-toggle flex justify-between items-center">
+                                <h4 class="text-xl font-medium text-slate-700">Health Check</h4>
+                                <span class="text-slate-500 text-sm">Click to expand</span>
+                            </div>
+                            <div class="api-endpoint-details mt-3 pt-3 border-t border-slate-200">
+                                <p><span class="method-badge method-get">GET</span> <code>/health</code></p>
+                                <p class="mt-2 text-slate-600">Checks the health of the API.</p>
+                                <h5 class="font-semibold mt-3 mb-1 text-slate-700">Response (200 OK):</h5>
+                                <div class="code-block"><code>{
+    "status": "ok"
+}</code></div>
+                                <h5 class="font-semibold mt-3 mb-1 text-slate-700">Curl Command:</h5>
+                                <div class="code-block"><code>curl http://localhost:8080/health</code></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-lg shadow">
+                             <div class="api-endpoint-toggle flex justify-between items-center">
+                                <h4 class="text-xl font-medium text-slate-700">Prometheus Metrics</h4>
+                                <span class="text-slate-500 text-sm">Click to expand</span>
+                            </div>
+                            <div class="api-endpoint-details mt-3 pt-3 border-t border-slate-200">
+                                <p><span class="method-badge method-get">GET</span> <code>/metrics</code></p>
+                                <p class="mt-2 text-slate-600">Exposes application metrics in Prometheus format.</p>
+                                <h5 class="font-semibold mt-3 mb-1 text-slate-700">Response:</h5>
+                                <p class="text-slate-600">Text-based Prometheus metrics.</p>
+                                <h5 class="font-semibold mt-3 mb-1 text-slate-700">Curl Command:</h5>
+                                <div class="code-block"><code>curl http://localhost:8080/metrics</code></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <div class="api-endpoint-toggle flex justify-between items-center">
+                                <h4 class="text-xl font-medium text-slate-700">Create TODO</h4>
+                                <span class="text-slate-500 text-sm">Click to expand</span>
+                            </div>
+                            <div class="api-endpoint-details mt-3 pt-3 border-t border-slate-200">
+                                <p><span class="method-badge method-post">POST</span> <code>/api/v1/todos</code></p>
+                                <p class="mt-2 text-slate-600">Creates a new TODO item. <code>title</code> is required. <code>completed</code> is optional (defaults to <code>false</code>).</p>
+                                <h5 class="font-semibold mt-3 mb-1 text-slate-700">Request Body (JSON):</h5>
+                                <div class="code-block"><code>{
+    "title": "My new todo item",
+    "completed": false
+}</code></div>
+                                <h5 class="font-semibold mt-3 mb-1 text-slate-700">Response (201 Created):</h5>
+                                <div class="code-block"><code>{
+    "id": "generated-uuid",
+    "title": "My new todo item",
+    "completed": false
+}</code></div>
+                                <h5 class="font-semibold mt-3 mb-1 text-slate-700">Curl Command:</h5>
+                                <div class="code-block"><code>curl -X POST -H "Content-Type: application/json" -d '{"title": "Learn Go Gin", "completed": false}' http://localhost:8080/api/v1/todos</code></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <div class="api-endpoint-toggle flex justify-between items-center">
+                                <h4 class="text-xl font-medium text-slate-700">Get All TODOs</h4>
+                                <span class="text-slate-500 text-sm">Click to expand</span>
+                            </div>
+                            <div class="api-endpoint-details mt-3 pt-3 border-t border-slate-200">
+                                <p><span class="method-badge method-get">GET</span> <code>/api/v1/todos</code></p>
+                                <p class="mt-2 text-slate-600">Retrieves all TODO items.</p>
+                                <h5 class="font-semibold mt-3 mb-1 text-slate-700">Response (200 OK):</h5>
+                                <div class="code-block"><code>[
+    {
+        "id": "uuid-1",
+        "title": "Learn Go Gin",
+        "completed": false
+    },
+    {
+        "id": "uuid-2",
+        "title": "Build a REST API",
+        "completed": true
+    }
+]</code></div>
+                                <h5 class="font-semibold mt-3 mb-1 text-slate-700">Curl Command:</h5>
+                                <div class="code-block"><code>curl http://localhost:8080/api/v1/todos</code></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <div class="api-endpoint-toggle flex justify-between items-center">
+                                <h4 class="text-xl font-medium text-slate-700">Get TODO by ID</h4>
+                                <span class="text-slate-500 text-sm">Click to expand</span>
+                            </div>
+                            <div class="api-endpoint-details mt-3 pt-3 border-t border-slate-200">
+                                <p><span class="method-badge method-get">GET</span> <code>/api/v1/todos/:id</code></p>
+                                <p class="mt-2 text-slate-600">Retrieves a single TODO item by its ID.</p>
+                                <h5 class="font-semibold mt-3 mb-1 text-slate-700">Response (200 OK):</h5>
+                                <div class="code-block"><code>{
+    "id": "uuid-of-todo",
+    "title": "Specific Todo Item",
+    "completed": false
+}</code></div>
+                                <h5 class="font-semibold mt-3 mb-1 text-slate-700">Response (404 Not Found):</h5>
+                                <div class="code-block"><code>{
+    "error": "Todo not found"
+}</code></div>
+                                <h5 class="font-semibold mt-3 mb-1 text-slate-700">Curl Command (replace <code>[ID]</code>):</h5>
+                                <div class="code-block"><code>curl http://localhost:8080/api/v1/todos/[ID]</code></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <div class="api-endpoint-toggle flex justify-between items-center">
+                                <h4 class="text-xl font-medium text-slate-700">Update TODO</h4>
+                                <span class="text-slate-500 text-sm">Click to expand</span>
+                            </div>
+                            <div class="api-endpoint-details mt-3 pt-3 border-t border-slate-200">
+                                <p><span class="method-badge method-put">PUT</span> <code>/api/v1/todos/:id</code></p>
+                                <p class="mt-2 text-slate-600">Updates an existing TODO item by its ID. Provide only the fields you want to update. <code>title</code> is required if present.</p>
+                                <h5 class="font-semibold mt-3 mb-1 text-slate-700">Request Body (JSON):</h5>
+                                <div class="code-block"><code>{
+    "title": "Updated todo title",
+    "completed": true
+}</code></div>
+                                <h5 class="font-semibold mt-3 mb-1 text-slate-700">Response (200 OK):</h5>
+                                <div class="code-block"><code>{
+    "id": "uuid-of-todo",
+    "title": "Updated todo title",
+    "completed": true
+}</code></div>
+                                <h5 class="font-semibold mt-3 mb-1 text-slate-700">Response (404 Not Found):</h5>
+                                <div class="code-block"><code>{
+    "error": "Todo not found"
+}</code></div>
+                                <h5 class="font-semibold mt-3 mb-1 text-slate-700">Curl Command (replace <code>[ID]</code>):</h5>
+                                <div class="code-block"><code>curl -X PUT -H "Content-Type: application/json" -d '{"title": "Updated title", "completed": true}' http://localhost:8080/api/v1/todos/[ID]</code></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <div class="api-endpoint-toggle flex justify-between items-center">
+                                <h4 class="text-xl font-medium text-slate-700">Delete TODO</h4>
+                                <span class="text-slate-500 text-sm">Click to expand</span>
+                            </div>
+                            <div class="api-endpoint-details mt-3 pt-3 border-t border-slate-200">
+                                <p><span class="method-badge method-delete">DELETE</span> <code>/api/v1/todos/:id</code></p>
+                                <p class="mt-2 text-slate-600">Deletes a TODO item by its ID.</p>
+                                <h5 class="font-semibold mt-3 mb-1 text-slate-700">Response (204 No Content):</h5>
+                                <p class="text-slate-600">Successful deletion (no response body).</p>
+                                <h5 class="font-semibold mt-3 mb-1 text-slate-700">Response (404 Not Found):</h5>
+                                <div class="code-block"><code>{
+    "error": "Todo not found"
+}</code></div>
+                                <h5 class="font-semibold mt-3 mb-1 text-slate-700">Curl Command (replace <code>[ID]</code>):</h5>
+                                <div class="code-block"><code>curl -X DELETE http://localhost:8080/api/v1/todos/[ID]</code></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="testing" class="content-section space-y-6">
+                    <h2 class="text-3xl font-semibold border-b pb-2 border-slate-300">Testing</h2>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <p class="text-slate-600">To run the unit tests for the API handlers:</p>
+                        <div class="code-block mt-2"><code>go test ./...</code></div>
+                    </div>
+                </section>
+
+                <section id="project-structure" class="content-section space-y-6">
+                    <h2 class="text-3xl font-semibold border-b pb-2 border-slate-300">Project Structure</h2>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <div class="code-block"><code>todo-app/
+├── main.go               # Main application entry point, router setup, CORS, Prometheus
+├── go.mod                # Go module definition
+├── go.sum                # Go module checksums
+├── Dockerfile            # Docker configuration for containerization
+├── handlers/
+│   └── todo_handlers.go  # API handler functions (Create, Get, Update, Delete)
+│   └── todo_handlers_test.go # Unit tests for handlers
+├── models/
+│   └── todo.go           # Defines the Todo struct
+└── storage/
+    └── inmemory.go       # In-memory storage for Todo items</code></div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const sidebar = document.getElementById('sidebar');
+
+            function showSection(targetId) {
+                contentSections.forEach(section => {
+                    if (section.id === targetId) {
+                        section.classList.add('active');
+                    } else {
+                        section.classList.remove('active');
+                    }
+                });
+                // For mobile, close sidebar after navigation
+                if (window.innerWidth < 768) {
+                    sidebar.classList.remove('open');
+                }
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    showSection(targetId);
+                    // Update URL hash for direct linking
+                    window.location.hash = targetId;
+                });
+            });
+
+            // Handle initial section display based on URL hash
+            const currentHash = window.location.hash.substring(1);
+            if (currentHash) {
+                showSection(currentHash);
+            } else {
+                // Show the first section by default if no hash
+                if(contentSections.length > 0) {
+                    contentSections[0].classList.add('active');
+                }
+            }
+
+            // Mobile menu toggle
+            mobileMenuButton.addEventListener('click', function() {
+                sidebar.classList.toggle('open');
+            });
+
+            // Add copy to clipboard functionality to code blocks
+            document.querySelectorAll('.code-block').forEach(block => {
+                const code = block.querySelector('code');
+                if (code) {
+                    const button = document.createElement('button');
+                    button.classList.add('copy-button');
+                    button.textContent = 'Copy';
+                    button.addEventListener('click', () => {
+                        navigator.clipboard.writeText(code.innerText)
+                            .then(() => {
+                                button.textContent = 'Copied!';
+                                setTimeout(() => { button.textContent = 'Copy'; }, 2000);
+                            })
+                            .catch(err => {
+                                console.error('Failed to copy text: ', err);
+                                // Fallback for older browsers or if execCommand is preferred
+                                const textArea = document.createElement('textarea');
+                                textArea.value = code.innerText;
+                                document.body.appendChild(textArea);
+                                textArea.select();
+                                try {
+                                    document.execCommand('copy');
+                                    button.textContent = 'Copied!';
+                                    setTimeout(() => { button.textContent = 'Copy'; }, 2000);
+                                } catch (execErr) {
+                                    console.error('Fallback copy failed: ', execErr);
+                                    alert('Failed to copy text.');
+                                }
+                                document.body.removeChild(textArea);
+                            });
+                    });
+                    block.appendChild(button);
+                }
+            });
+
+            // API Endpoint toggles
+            document.querySelectorAll('.api-endpoint-toggle').forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    const details = toggle.nextElementSibling;
+                    if (details && details.classList.contains('api-endpoint-details')) {
+                        details.classList.toggle('open');
+                        const expandText = toggle.querySelector('span');
+                        if (expandText) {
+                            expandText.textContent = details.classList.contains('open') ? 'Click to collapse' : 'Click to expand';
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
