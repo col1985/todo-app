@@ -2,49 +2,6 @@
 
 This repository contains a full-stack TODO application, consisting of a Go Gin RESTful API backend and a ReactJS single-page application (SPA) frontend.
 
-Table of Contents
-Project Overview
-
-Features
-
-Prerequisites
-
-Getting Started
-
-Project Structure
-
-Backend (Go Gin API)
-
-Build and Run Locally
-
-Build and Run with Docker
-
-Frontend (ReactJS UI)
-
-Build and Run Locally
-
-Build and Run with Docker
-
-Running Both Applications
-
-API Endpoints
-
-Health Check
-
-Prometheus Metrics
-
-Create TODO
-
-Get All TODOs
-
-Get TODO by ID
-
-Update TODO
-
-Delete TODO
-
-Testing
-
 ## Project Overview
 
 This application demonstrates a simple TODO list functionality. The backend is a RESTful API written in Go using the Gin framework, providing CRUD operations for TODO items. It includes in-memory storage, CORS support for cross-origin requests, and a Prometheus metrics endpoint for monitoring. The frontend is a ReactJS single-page application that consumes this API, providing an interactive user interface to manage TODOs.
@@ -130,9 +87,9 @@ Run the application:
 go run main.go
 ```
 
-The API will start on http://localhost:8080.
+The API will start on [http://localhost:8080](http://localhost:8080).
 
-The interactive API documentation will be available at http://localhost:8080/ (redirects to /docs/index.html).
+The interactive API documentation will be available at [http://localhost:8080](http://localhost:8080) (redirects to /docs/index.html).
 
 #### Build and Run with Podman
 
@@ -148,7 +105,7 @@ Run the container:
 podman run -p 8080:8080 todo-api:latest
 ```
 
-The API will be accessible at http://localhost:8080.
+The API will be accessible at [http://localhost:8080](http://localhost:8080).
 
 ### Frontend (UI)
 
@@ -172,9 +129,9 @@ Start the dev server:
 npm start # or yarn start
 ```
 
-The UI will open in your browser at http://localhost:3000.
+The UI will open in your browser at [http://localhost:3000](http://localhost:3000).
 
-#### Build and Run with Podman
+#### Build UI and Run with Podman
 
 Ensure `nginx.conf` is in the `ui` root directory.
 
@@ -190,7 +147,7 @@ Run the container:
 podman run -p 3000:80 todo-ui:latest
 ```
 
-The UI will be accessible at http://localhost:3000.
+The UI will be accessible at [http://localhost:3000](http://localhost:3000).
 
 ### Running Both Applications
 
@@ -216,11 +173,11 @@ npm start
 podman run -p 3000:80 todo-ui:latest
 ```
 
-Once both are running, open your browser to http://localhost:3000 to interact with the TODO application.
+Once both are running, open your browser to [http://localhost:3000](http://localhost:3000) to interact with the TODO application.
 
 ### API Endpoints
 
-The API base URL is http://localhost:8080/api/v1.
+The API base URL is [http://localhost:8080/api/v1](http://localhost:8080/api/v1).
 
 #### Health Check
 
@@ -275,16 +232,14 @@ Request Body (JSON):
 
 completed is optional (defaults to false).
 
-Response (201 Cr# eat
-ed):
+Response (201 Created):
 
-**```json
-**{
+```json
+{
 *   * `"id": "genera`ted-uuid",
     "title": "My new todo item",
     "completed": false
 }
-```json
 ```
 
 Curl Command:
@@ -299,9 +254,8 @@ Retriev```es all TODO items.
 
 **Endpoint**: *GET* `/api/v1/todos`
 
-```bash
 Response (200 OK):
-```
+
 ```json
 [
     {
