@@ -236,7 +236,7 @@ Response (201 Created):
 
 ```json
 {
-*   * `"id": "genera`ted-uuid",
+    "id": "genera`ted-uuid",
     "title": "My new todo item",
     "completed": false
 }
@@ -366,7 +366,7 @@ Response (404 Not Found):
 
 Curl Command (replace [ID] with an actual TODO ID):
 
-```json
+```bash
 curl -X DELETE http://localhost:8080/api/v1/todos/[ID]
 ```
 
