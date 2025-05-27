@@ -25,21 +25,21 @@ COPY . .
 # -ldflags="-s -w" reduces the size of the binary by stripping debug info
 # -o todo-app specifies the output executable name
 # ./... builds all packages in the current directory and its subdirectories
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags="-s -w" -o my-todo-app-api ./main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-s -w" -o todo-api ./main.go
 
 # Stage 2: Create the final lean image
 # Use a minimal base image for the final application (scratch is the smallest)
-FROM alpine:latest
+FROM golang:1.23-alpine
 
 # Set the current working directory
-WORKDIR /root/
+WORKDIR /
 
 # Copy the built executable from the builder stage
 # --from=builder specifies to copy from the stage named 'builder'
-COPY --from=builder /app/my-todo-app-api .
+COPY --from=builder /app/todo-api .
 
 # Expose the port the application will listen on
 EXPOSE 8080
 
 # Command to run the executable when the container starts
-CMD ["./my-todo-app-api"]
+ENTRYPOINT ["./todo-api"]

@@ -1,0 +1,22 @@
+{{- if .Values.route.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "todo-app-api-chart.fullname" . }}
+  labels:
+    {{- include "todo-app-api-chart.labels" . | nindent 4 }}
+spec:
+  host: {{ .Values.route.path }}
+  port:
+    targetPort: {{ .Values.service.port }}
+  tls:
+    insecureEdgeTerminationPolicy: {{ .Values.route.policy }}
+    termination: {{ .Values.route.type }}
+  to:
+    kind: Service
+{{- if .Values.service.name }}
+    name: {{ .Values.service.name }}
+{{- end }}
+    weight: 100
+  wildcardPolicy: None
+{{- end }}
