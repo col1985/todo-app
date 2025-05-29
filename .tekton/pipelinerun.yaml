@@ -6,7 +6,7 @@ metadata:
   annotations:
     # The event we are targeting as seen from the webhook payload
     # this can be an array too, i.e: [pull_request, push]
-    pipelinesascode.tekton.dev/on-event: "[pull_request, push]"
+    pipelinesascode.tekton.dev/on-event: "[pull_request, merge, push]"
 
     # The branch or tag we are targeting (ie: main, refs/tags/*)
     pipelinesascode.tekton.dev/on-target-branch: "[main]"
@@ -90,7 +90,7 @@ spec:
             - ReadWriteOnce
           resources:
             requests:
-              storage: 2Gi
+              storage: 1Gi
     # This workspace will inject secret to help the git-clone task to be able to
     # checkout the private repositories
     - name: basic-auth
