@@ -13,12 +13,12 @@ metadata:
 
     # Fetch the git-clone task from hub, we are able to reference later on it
     # with taskRef and it will automatically be embedded into our pipeline.
-    pipelinesascode.tekton.dev/task: "git-clone"
+    # pipelinesascode.tekton.dev/task: "git-clone"
 
     # Use golangci-lint from the hub to test our Golang project
-    pipelinesascode.tekton.dev/task-1: "golangci-lint"
+    # pipelinesascode.tekton.dev/task-1: "golangci-lint"
 
-    pipelinesascode.tekton.dev/pipeline: "https://raw.githubusercontent.com/col1985/tkn-pipelines-as-code/refs/heads/main/pac/pipelines/build-and-push-pipeline.yaml"
+    pipelinesascode.tekton.dev/pipeline: "https://github.com/col1985/tkn-pipelines-as-code/blob/main/pac/pipelines/build-and-push-pipeline.yaml"
 
     # Use maven task from hub
     #
@@ -37,6 +37,8 @@ spec:
   params:
     # The variable with brackets are special to Pipelines as Code
     # They will automatically be expanded with the events from Github.
+    - name: deployment_name
+      type: string
     - name: repo_url
       value: "{{ repo_url }}"
     - name: revision
