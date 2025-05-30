@@ -5,8 +5,10 @@ metadata:
 spec:
   workspaces:
   - name: shared-workspace
+  - name: dockerconfig-ws
+    optional: true
   params:
-  - name: deployment_name
+  - name: build_name
     type: string
     description: name of the deployment to be patched
   - name: repo_url
@@ -19,6 +21,9 @@ spec:
     type: string
     description: revision to be used from repo of the code for deployment
     default: main
+  - name: dockerfile
+    type: string
+    description: image to be build from the code
   - name: IMAGE_REPO
     type: string
     description: image to be build from the code
@@ -45,6 +50,16 @@ spec:
       value: "true"
     - name: REVISION
       value: $(params.revision)
+  - name: linter
+    taskRef:
+      resolver: cluster
+      params:
+      - name: kind
+        value: task
+      - name: name
+        value: golangci-lint
+      - name: namespace
+        value: openshift-pipelines
   - name: build-image
     taskRef:
       resolver: cluster
@@ -60,8 +75,12 @@ spec:
       value: $(params.IMAGE_REPO)
     - name: CONTEXT
       value: $(params.context_dir)
+    - name: DOCKERFILE
+      value: $(params.dockerfile)
     workspaces:
     - name: source
       workspace: shared-workspace
+    - name: dockerconfig
+      workspace: dockerconfig-ws
     runAfter:
     - fetch-repository

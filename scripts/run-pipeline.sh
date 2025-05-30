@@ -11,8 +11,9 @@ tkn pipeline start build-and-push \
   --prefix-name build-push-pipelinerun \
   -w name="shared-workspace,volumeClaimTemplateFile=${PVC}" \
   -p build_name="todo-api-${VERSION}" \
-  -p context_dir=api \
+  -p context_dir=./api \
   -p repo_url="${REPO}" \
-  -p IMAGE=$IMAGE \
-  --use-param-defaults
+  -p IMAGE_REPO=$IMAGE \
+  -p dockerfile=./Containerfile \
+  -p revision=main
 
