@@ -18,8 +18,8 @@ metadata:
     # Use golangci-lint from the hub to test our Golang project
     # pipelinesascode.tekton.dev/task-1: "golangci-lint"
 
-    pipelinesascode.tekton.dev/pipeline: "https://github.com/col1985/tkn-pipelines-as-code/blob/main/pac/pipelines/build-and-push-pipeline.yaml"
-
+    # pipelinesascode.tekton.dev/pipeline: "https://github.com/col1985/tkn-pipelines-as-code/blob/main/pac/pipelines/build-and-push-pipeline.yaml"
+    pipelinesascode.tekton.dev/pipeline: "./pipelines/build-and-push-pipeline.yaml"
     # Use maven task from hub
     #
     # pipelinesascode.tekton.dev/task-1: "maven"
