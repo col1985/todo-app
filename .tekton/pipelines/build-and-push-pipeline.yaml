@@ -12,10 +12,13 @@ spec:
   - name: repo_url
     type: string
     description: url of the git repo for the code of deployment
+  - name: context_dir
+    type: string
+    description: url of the git repo for the code of deployment
   - name: revision
     type: string
     description: revision to be used from repo of the code for deployment
-    default: master
+    default: main
   - name: IMAGE_REPO
     type: string
     description: image to be build from the code
@@ -55,6 +58,8 @@ spec:
     params:
     - name: IMAGE
       value: $(params.IMAGE_REPO)
+    - name: CONTEXT
+      value: $(params.context_dir)
     workspaces:
     - name: source
       workspace: shared-workspace
