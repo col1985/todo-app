@@ -18,7 +18,7 @@ metadata:
     # Use golangci-lint from the hub to test our Golang project
     # pipelinesascode.tekton.dev/task-1: "golangci-lint"
 
-    pipelinesascode.tekton.dev/pipeline: "https://github.com/col1985/tkn-pipelines-as-code/blob/main/pac/pipelines/build-and-push-pipeline.yaml"
+    pipelinesascode.tekton.dev/pipeline: https://github.com/col1985/tkn-pipelines-as-code/blob/main/pac/pipelines/build-and-push-pipeline.yaml
     # pipelinesascode.tekton.dev/pipeline: "./pipelines/build-and-push-pipeline.yaml"
     # Use maven task from hub
     #
@@ -55,19 +55,19 @@ spec:
       - name: dockerconfig-ws
         optional: true
     tasks:
-      - name: fetch-repository
-        taskRef:
-          name: git-clone
-        workspaces:
-          - name: output
-            workspace: source
-          - name: basic-auth
-            workspace: basic-auth
-        params:
-          - name: url
-            value: $(params.repo_url)
-          - name: revision
-            value: $(params.revision)
+      # - name: fetch-repository
+      #   taskRef:
+      #     name: git-clone
+      #   workspaces:
+      #     - name: output
+      #       workspace: source
+      #     - name: basic-auth
+      #       workspace: basic-auth
+      #   params:
+      #     - name: url
+      #       value: $(params.repo_url)
+      #     - name: revision
+      #       value: $(params.revision)
       # Customize this task if you like, or just do a taskRef
       # to one of the hub task.
       - name: noop-task
