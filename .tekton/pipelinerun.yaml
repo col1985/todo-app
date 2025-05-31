@@ -33,6 +33,8 @@ spec:
       value: "{{ revision }}"
     - name: IMAGE_REPO
       value: quay.io/cbennett/todo-api:latest
+    - name: package
+      value: my-todo-app-api
   pipelineSpec:
     params:
       - name: repo_url
