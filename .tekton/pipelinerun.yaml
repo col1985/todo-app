@@ -13,6 +13,7 @@ metadata:
 
     pipelinesascode.tekton.dev/pipeline: https://github.com/col1985/tkn-pipelines-as-code/blob/main/pipelines/go-build-and-push-pipeline.yaml
 
+    pipelinesascode.tekton.dev/task: https://github.com/col1985/tkn-pipelines-as-code/blob/main/custom-tasks/go-unit-test-task.yaml
     # How many runs we want to keep.
     pipelinesascode.tekton.dev/max-keep-runs: "5"
 spec:
