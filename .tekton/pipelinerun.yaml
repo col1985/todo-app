@@ -35,20 +35,6 @@ spec:
       value: quay.io/cbennett/todo-api:latest
     - name: package
       value: .
-  # pipelineSpec:
-  #   params:
-  #     - name: repo_url
-  #     - name: revision
-  #     - name: context_dir
-  #     - name: package
-  #     - name: dockerfile
-  #     - name: build_name
-  #     - name: IMAGE_REPO
-  #   workspaces:
-  #     - name: shared-workspace
-  #     - name: basic-auth
-  #     - name: dockerconfig-ws
-  #       optional: true
   workspaces:
     - name: shared-workspace
       volumeClaimTemplate:
