@@ -34,11 +34,16 @@ spec:
     - name: IMAGE_REPO
       value: quay.io/cbennett/todo-api:latest
     - name: package
-      value: my-todo-app-api
+      value: .
   pipelineSpec:
     params:
       - name: repo_url
       - name: revision
+      - name: context_dir
+      - name: package
+      - name: dockerfile
+      - name: build_name
+      - name: IMAGE_REPO
     workspaces:
       - name: shared-workspace
       - name: basic-auth
