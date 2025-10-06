@@ -1,23 +1,50 @@
+# A Golang API component
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: todo-app
-  description: |
-    Todo app for learning purposes.
-  links:
-    - title: GitHub
-      url: http://backstage.io
-    # - title: Documentation
-    #   url: https://backstage.io/docs
-    # - title: Storybook
-    #   url: https://backstage.io/storybook
-    # - title: Discord Chat
-    #   url: https://discord.com/invite/EBHEGzX
+  name: todo-api
+  description: The Golang backend API for our Todo application.
   annotations:
-    github.com/project-slug: backstage/backstage
-    backstage.io/techdocs-ref: dir:.
-    # lighthouse.com/website-url: https://backstage.io
+    # This annotation links the API to its corresponding UI component.
+    backstage.io/has-part-of: 'todo-ui'
+  tags:
+    - golang
+    - api
+    - backend
+    - http
+  links:
+    - url: https://github.com/col1985/todo-app/tree/feat/dev-hub/api
+      title: 'Todo API GitHub Repo'
+      icon: 'github'
 spec:
-  type: library
-  owner: CNCF
+  type: service
   lifecycle: production
+  owner: CBennett
+  system: Todo-App
+---
+# A ReactJS UI component
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: todo-ui
+  description: The frontend ReactJS UI for our Todo application.
+  annotations:
+    # This annotation shows the UI is part of the same system as the API.
+    backstage.io/part-of: 'todo-api'
+  tags:
+    - react
+    - frontend
+    - ui
+    - web
+  links:
+    - url: https://react-ui.example.com
+      title: 'Production URL'
+      icon: 'website'
+    - url: https://github.com/col1985/todo-app/tree/feat/dev-hub/ui
+      title: 'Todo UI GitHub Repo'
+      icon: 'github'
+spec:
+  type: service
+  lifecycle: production
+  owner: CBennett
+  system: Todo-App
